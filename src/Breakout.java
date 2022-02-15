@@ -95,7 +95,13 @@ public class Breakout extends GraphicsProgram {
             if(ball.lost) {
                 handleLoss();
             }
-            pause(5);
+            pause(4);
+
+            if(bricksBroken >= 150) {
+                pause(500);
+                makeNewLevel();
+                waitForClick();
+            }
         }
     }
 
@@ -126,10 +132,10 @@ public class Breakout extends GraphicsProgram {
         if(obj != null) {
             //let's see what we hit
             if(obj instanceof Paddle) {
-                if(ball.getX() < (paddle.getX() + paddle.getWidth()*0.15)){
+                if(ball.getX() < (paddle.getX() + 15)){
                     //did I hit the left side of the paddle?
                     ball.bounceLeft();
-                } else if(ball.getX() > (paddle.getX()+ paddle.getWidth()*0.85)) {
+                } else if(ball.getX() > (paddle.getX()+ paddle.getWidth() - 15)) {
                     //did I hit the right side of the paddle?
                     ball.bounceRight();
                 } else {
@@ -163,8 +169,37 @@ public class Breakout extends GraphicsProgram {
                     bricksBrokenLabel = new GLabel(bricksBroken + " bricks broken");
                     add(bricksBrokenLabel, livesLabel.getX() + livesLabel.getWidth() + 5, livesLabel.getY());
                 }
+
             }
         }
+    }
+
+    private void makeNewLevel() {
+
+        ball.setLocation(getWidth()/2, 350);
+
+        rand = new Random();
+
+        for (int row = 0; row < 10; row++) {
+            for (int col = 0; col < numBricksInRow; col++) {
+                double brickX = (10 + col * (Brick.WIDTH + 5));
+                double brickY = 4*Brick.HEIGHT + row * (Brick.HEIGHT+5);
+                powerupChance = rand.nextInt(20);
+                Brick brick = new Brick(brickX, brickY, rowColors[rand.nextInt(rowColors.length)], row);
+
+                if(powerupChance == 0) {
+                    brick.setFillColor(Color.BLACK);
+                }
+
+                add(brick);
+            }
+        }
+
+        lives = 3;
+        livesLabel = new GLabel(lives + " lives left");
+        add(livesLabel, 5, 15);
+        bricksBroken = 0;
+        bricksBrokenLabel = new GLabel(bricksBroken + " bricks broken");
     }
 
     private void handleLoss() {
@@ -188,17 +223,16 @@ public class Breakout extends GraphicsProgram {
     }
 
     private void doPowerUps() {
-            switch(rand.nextInt(2)) {
-                case 0:
-                    paddle.setBounds(paddle.getX(), paddle.getY(), paddle.getWidth() + 20, paddle.getHeight());
-                    break;
-                case 1:
-                    lives++;
-                    livesLabel.setLabel(lives + " lives left");
-                    break;
-            }
+        switch (rand.nextInt(2)) {
+            case 0:
+                paddle.setBounds(paddle.getX(), paddle.getY(), paddle.getWidth() + 20, paddle.getHeight());
+                break;
+            case 1:
+                lives++;
+                livesLabel.setLabel(lives + " lives left");
+                break;
+        }
     }
-    //this is a new comment
 
 
     public static void main(String[] args) {
