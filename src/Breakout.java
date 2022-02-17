@@ -194,12 +194,6 @@ public class Breakout extends GraphicsProgram {
                 add(brick);
             }
         }
-
-        lives = 3;
-        livesLabel = new GLabel(lives + " lives left");
-        add(livesLabel, 5, 15);
-        bricksBroken = 0;
-        bricksBrokenLabel = new GLabel(bricksBroken + " bricks broken");
     }
 
     private void handleLoss() {
